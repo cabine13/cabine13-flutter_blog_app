@@ -223,4 +223,54 @@ onPressed: () {
   },
 },
 ```
-## Dependency injection 
+## Dependency injection - get_it
+init_dependencies.dart au meme niveau que main.
+Au passage, on initialise aussi supabase dans ce fichier plutot que dans main.
+```
+final serviceLocator = GetIt.instance;
+
+Future<void> initDependencies() async {
+  _initAuth();
+  final supabase = await Supabase.initialize(
+    url: AppSecrets.supabaseUrl,
+    anonKey: AppSecrets.supabaseAnonKey,
+  );
+  serviceLocator.registerLazySingleton(() => supabase.client);
+}
+
+void _initAuth() {
+  serviceLocator.registerFactory<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(
+      serviceLocator(),
+    ),
+  );
+  serviceLocator.registerFactory<AuthRepository>(
+    () => AuthRepositoryImpl(
+      serviceLocator(),
+    ),
+  );
+  serviceLocator.registerFactory(
+    () => UserSignUp(
+      serviceLocator(),
+    ),
+  );
+  serviceLocator.registerLazySingleton(
+    () => AuthBloc(
+      userSignUp: serviceLocator(),
+    ),
+  );
+}
+```
+Dans l'appli, pour appeler une dependance, on se servira de serviceLocator
+```
+runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => serviceLocator<AuthBloc>(),
+        ),
+      ],
+      child: const MainApp(),
+    ),
+  );
+```
