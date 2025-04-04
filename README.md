@@ -274,3 +274,23 @@ runApp(
     ),
   );
 ```
+## Creating Postgres Table & Function Trigger - Profiles (02:24:16)
+See video at 02:24:16 https://www.youtube.com/watch?v=ELFORM9fmss
+
+Le but est de sauvegarder le User crée dans une de nos tables. Configuration d'un trigger
+
+## User Entity & User Model
+Entity
+```
+class AppUser {
+  AppUser({
+    required this.id,
+    required this.email,
+    required this.name,
+  });
+  final String id;
+  final String email;
+  final String name;
+}
+```
+02:42:40
